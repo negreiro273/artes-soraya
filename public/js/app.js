@@ -1,5 +1,5 @@
 // =================== CONFIGURAÇÕES GLOBAIS ===================
-const WHATSAPP_NUMERO = '5565992047706';
+const WHATSAPP_NUMERO = '5565984663883';
 
 // =================== VARIÁVEIS GLOBAIS ===================
 let produtos = [];

@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Artes da Soraya</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="/images/logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+        <h1>Artes da Soraya</h1>
+        <p>Área Administrativa</p>
+      </div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" id="loginEmail" required placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Senha</label>
+          <input type="password" id="loginSenha" required placeholder="Sua senha">
+        </div>
+        <div id="loginErro" class="erro-msg"></div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i> Entrar
+        </button>
+      </form>
+      <div class="login-footer">
+        <a href="/"><i class="fas fa-arrow-left"></i> Voltar ao site</a>
+      </div>
+    </div>
+  </div>
+  <script src="/js/login.js"></script>
+</body>
+</html>

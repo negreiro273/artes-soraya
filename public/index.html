@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artes da Soraya - Presentes Personalizados</title>
+  <link rel="stylesheet" href="/css/style.css">  
+  <link rel="stylesheet" href="/css/carrossel.css">  
+  <link rel="icon" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-area">
+        <img src="/images/logo.png" alt="Artes da Soraya" class="logo">
+        <h1 class="site-title">Artes da Soraya</h1>
+      </div>
+      <div class="search-area">
+        <input type="text" id="searchInput" placeholder=" Buscar produtos...">
+      </div>
+      <button class="btn-lista" onclick="abrirLista()">
+        <i class="fas fa-gift"></i> Montar Sua Lista de Presentes
+      </button>
+    </div>
+      <div class="header-bottom-line"></div>
+    <nav class="nav-menu">     
+      
+      
+      <button class="menu-btn active" data-categoria="todas" onclick="filtrarCategoria('todas')">
+  <i class="fas fa-th"></i> Todos
+</button>
+<div id="menuCategorias"></div>
+      <div id="menuCategorias"></div>
+    </nav>
+  </header>
+
+  <!-- HEADER COM BANNERS -->
+  <section class="banner-section">
+    <div class="banner-slider" id="bannerSlider">
+      <!-- banners carregados via JS -->
+    </div>
+    <div class="banner-dots" id="bannerDots"></div>
+  </section>
+
+  <!-- CORPO - LISTA DE PRODUTOS -->
+  <main class="main-content">
+    <h2 class="section-title">Nossos Produtos</h2>
+    <div class="produtos-grid" id="produtosGrid">
+      <!-- produtos carregados via JS -->
+    </div>
+  </main>
+
+  <!-- MODAL DETALHES -->
+  <div class="modal" id="modalDetalhes">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModal()">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+
+<!-- MODAL IDENTIFICAÇÃO DO CLIENTE -->
+    <div class="modal" id="modalIdentificacao">
+      <div class="modal-content modal-identificacao">
+        <span class="close" onclick="fecharModalIdentificacao()">&times;</span>
+        <h2>🎁 Identifique-se para montar sua lista</h2>
+        <p style="margin-bottom: 20px; color: #666;">
+          Precisamos do seu nome e telefone para enviar sua lista corretamente.
+        </p>
+        <form id="formIdentificacao">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Seu Nome</label>
+            <input type="text" id="clienteNome" required placeholder="Digite seu nome completo">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-phone"></i> Seu Telefone</label>
+            <input type="tel" id="clienteTelefone" required placeholder="(00) 00000-0000" maxlength="15">
+          </div>
+          <button type="submit" class="btn-salvar" style="width: 100%; margin-top: 15px;">
+            <i class="fas fa-check"></i> Confirmar e Continuar
+          </button>
+        </form>
+      </div>
+    </div>
+
+
+  <!-- MODAL LISTA DE PRESENTES -->
+
+  
+<div class="modal" id="modalLista" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+  <div class="modal-content" style="background: white; margin: 5% auto; padding: 30px; border-radius: 10px; max-width: 500px; position: relative;">
+    <span class="close" onclick="fecharLista()" style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</span>
+    <h2 style="color: #8B4513; margin-bottom: 20px;"> Minha Lista de Presentes</h2>
+    <div id="listaItens">
+      <!-- Conteúdo será carregado via JavaScript -->
+    </div>
+  </div>
+</div>
+       <!-- 
+  <div class="modal" id="modalLista">
+    <div class="modal-content modal-lista">
+     
+      <span class="close" onclick="fecharLista()">&times;</span>
+      <h2> Minha Lista de Presentes</h2>
+      <div id="listaItens"></div>
+   
+       
+         <button class="btn-salvar" onclick="finalizarPedido()" > Finalizar Pedido </button>
+
+     
+    </div>      
+    </div>
+  </div>
+    
+  -->
+
+  <!-- BOTÃO WHATSAPP FLUTUANTE -->
+  <a href="https://wa.me/5565992047706?text=Olá! Gostaria de mais informações."
+     class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  
+ <!-- RODAPÉ -->
+<footer class="footer">
+  <div class="footer-main">
+    
+    <!-- Coluna 1: Logo e Tagline -->
+    <div class="footer-col footer-col-logo">
+      <div class="footer-logo-circle">
+        <img src="/images/logo.png" alt="Artes da Soraya" onerror="this.style.display='none'">
+        
+      </div>
+      <h2 class="footer-brand-name">Artes da Soraya</h2>
+      <div class="footer-divider">
+        <span class="footer-heart">♥</span>
+      </div>
+      <p class="footer-tagline">Criando presentes únicos<br>para momentos especiais.</p>
+    </div>
+
+    <!-- Coluna 2: Atendimento -->
+    <div class="footer-col footer-col-atendimento">
+      <h3 class="footer-section-title">ATENDIMENTO</h3>
+      <div class="footer-divider">
+        <span class="footer-heart">♥</span>
+      </div>
+      <div class="footer-info-list">
+        <div class="footer-info-item">
+          <div class="footer-icon-box">
+            <i class="fas fa-phone"></i>
+          </div>
+          <span>(65) 98466-3883</span>
+        </div>
+        <div class="footer-info-item">
+          <div class="footer-icon-box">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <span>contato@artesdasoraya.com</span>
+        </div>
+        <div class="footer-info-item">
+          <div class="footer-icon-box">
+            <i class="fas fa-clock"></i>
+          </div>
+         <span style="align-items: flex-start;" >Seg a Qui: 8h às 18h <br> Sex: 8h às 17h</span>         
+         
+        </div>
+        <div class="footer-info-item">
+          <div class="footer-icon-box">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <span>Cuiabá - MT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna 3: Redes Sociais -->
+    <div class="footer-col footer-col-social">
+      <h3 class="footer-section-title">SIGA A ARTES DA SORAYA</h3>
+      <div class="footer-divider">
+        <span class="footer-heart">♥</span>
+      </div>
+      <div class="footer-social-list">
+        <a href="https://instagram.com/artesdasoraya" target="_blank" class="footer-social-item">
+          <div class="footer-icon-box footer-icon-social">
+            <i class="fab fa-instagram"></i>
+          </div>
+          <span>@artesdasoraya</span>
+        </a>
+        <a href="#" target="_blank" class="footer-social-item">
+          <div class="footer-icon-box footer-icon-social">
+            <i class="fab fa-facebook-f"></i>
+          </div>
+          <span>Artes da Soraya</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Linha separadora -->
+  <div class="footer-bottom-line"></div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <span class="footer-heart-small">♥</span>
+    <p>&copy; 2026 Artes da Soraya - Todos os direitos reservados.</p>
+    <span class="footer-heart-small">♥</span>
+  </div>
+</footer>
+
+<!-- BOTÃO WHATSAPP FLUTUANTE -->
+<a href="https://wa.me/5565992047706?text=Olá! Gostaria de mais informações sobre os produtos."
+   class="whatsapp-float" target="_blank" title="Fale conosco pelo WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

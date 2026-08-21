@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Artes da Soraya</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/carrossel.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+
+
+<!-- Modal Zoom Imagem -->
+<div id="modalZoom" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.9);cursor:pointer;" onclick="fecharZoom()">
+  <span style="position:absolute;top:20px;right:40px;color:#fff;font-size:40px;cursor:pointer;">&times;</span>
+  <img id="imgZoom" style="display:block;margin:auto;max-width:90%;max-height:90vh;object-fit:contain;" src="">
+</div>
+
+<script>
+function abrirZoom(src) {
+  document.getElementById('imgZoom').src = src;
+  document.getElementById('modalZoom').style.display = 'block';
+}
+
+function fecharZoom() {
+  document.getElementById('modalZoom').style.display = 'none';
+}
+</script>
+
+
+
+
+<body class="admin-body">
+
+  <header class="admin-header">
+    <div class="admin-header-left">
+      <h1><i class="fas fa-cog"></i> Painel Administrativo</h1>
+      <span id="usuarioNome" class="usuario-info"></span>
+    </div>
+    <div class="admin-header-right">
+      <a href="/" class="btn-voltar"><i class="fas fa-arrow-left"></i> Ver Site</a>
+      <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="mostrarTab('produtos', this)"> Produtos</button>
+      <button class="tab-btn" onclick="mostrarTab('categorias', this)">🏷️ Categorias</button>
+      <button class="tab-btn" onclick="mostrarTab('banners', this)">🖼️ Banners</button>
+       <button class="tab-btn" onclick="mostrarTab('pedidos', this)">📋 Pedidos (OS)</button>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="tab-content active" id="tab-produtos">
+      <h2>Cadastro de Produtos</h2>
+      <form id="formProduto" class="form-admin">
+        <input type="hidden" id="prodId">
+        <input type="text" id="prodNome" placeholder="Nome do Produto" required>
+        <textarea id="prodDescricao" placeholder="Descrição do Produto" required></textarea>
+        <input type="number" id="prodValor" placeholder="Valor (R$)" step="0.01" required>
+        <select id="prodCategoria" required>
+          <option value="">Selecione a Categoria</option>
+        </select>
+       <!-- <input type="file" id="prodImagem" accept="image/*">-->
+        <div class="upload-multiple">
+          <label style="font-weight: bold; color: var(--primary); margin-bottom: 8px; display: block;">
+            📸 Imagens do Produto (máximo 3)
+          </label>
+          <input type="file" id="prodImagem1" accept="image/*" class="input-imagem">
+          <br>
+          <input type="file" id="prodImagem2" accept="image/*" class="input-imagem">
+          <br>
+          <input type="file" id="prodImagem3" accept="image/*" class="input-imagem">
+          <small style="color: #666; font-size: 0.85rem;"><br>
+            A primeira imagem será a principal. Preencha apenas as que desejar.
+          </small>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-salvar">💾 Salvar Produto</button>
+          <button type="button" class="btn-cancelar" onclick="limparFormProduto()">Cancelar</button>
+        </div>
+      </form>
+      <div id="listaProdutos" class="lista-admin"></div>
+    </div>
+
+    
+    <!-- CATEGORIAS -->
+      <div class="tab-content" id="tab-categorias">
+        <h2>Cadastro de Categorias</h2>
+        <form id="formCategoria" class="form-admin">
+          <input type="hidden" id="catId">
+          
+          <div class="form-group">
+            <label><i class="fas fa-tag"></i> Descrição da Categoria</label>
+            <input type="text" id="catDescricao" placeholder="Ex: Canecas, Cestas, Quadros..." required>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fas fa-icons"></i> Selecione o Ícone</label>
+            <div class="icone-selecao">
+              <div class="icone-grid">
+                <!-- Ícones disponíveis -->
+                <div class="icone-item" data-icone="fa-box" onclick="selecionarIcone('fa-box')">
+                  <i class="fas fa-box"></i>
+                  <span>Caixa</span>
+                </div>
+                <div class="icone-item" data-icone="fa-mug-hot" onclick="selecionarIcone('fa-mug-hot')">
+                  <i class="fas fa-mug-hot"></i>
+                  <span>Caneca</span>
+                </div>
+                <div class="icone-item" data-icone="fa-shopping-basket" onclick="selecionarIcone('fa-shopping-basket')">
+                  <i class="fas fa-shopping-basket"></i>
+                  <span>Cesta</span>
+                </div>
+                <div class="icone-item" data-icone="fa-gift" onclick="selecionarIcone('fa-gift')">
+                  <i class="fas fa-gift"></i>
+                  <span>Presente</span>
+                </div>
+                <div class="icone-item" data-icone="fa-image" onclick="selecionarIcone('fa-image')">
+                  <i class="fas fa-image"></i>
+                  <span>Foto</span>
+                </div>
+                <div class="icone-item" data-icone="fa-palette" onclick="selecionarIcone('fa-palette')">
+                  <i class="fas fa-palette"></i>
+                  <span>Arte</span>
+                </div>
+                <div class="icone-item" data-icone="fa-tshirt" onclick="selecionarIcone('fa-tshirt')">
+                  <i class="fas fa-tshirt"></i>
+                  <span>Camiseta</span>
+                </div>
+                <div class="icone-item" data-icone="fa-book" onclick="selecionarIcone('fa-book')">
+                  <i class="fas fa-book"></i>
+                  <span>Livro</span>
+                </div>
+                <div class="icone-item" data-icone="fa-pen-fancy" onclick="selecionarIcone('fa-pen-fancy')">
+                  <i class="fas fa-pen-fancy"></i>
+                  <span>Escrita</span>
+                </div>
+                <div class="icone-item" data-icone="fa-home" onclick="selecionarIcone('fa-home')">
+                  <i class="fas fa-home"></i>
+                  <span>Casa</span>
+                </div>
+                <div class="icone-item" data-icone="fa-heart" onclick="selecionarIcone('fa-heart')">
+                  <i class="fas fa-heart"></i>
+                  <span>Amor</span>
+                </div>
+                <div class="icone-item" data-icone="fa-star" onclick="selecionarIcone('fa-star')">
+                  <i class="fas fa-star"></i>
+                  <span>Estrela</span>
+                </div>
+              </div>
+              <input type="hidden" id="catIcone" value="fa-box">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-salvar">💾 Salvar Categoria</button>
+            <button type="button" class="btn-cancelar" onclick="limparFormCategoria()">Cancelar</button>
+          </div>
+        </form>
+        <div id="listaCategorias" class="lista-admin"></div>
+      </div>
+
+    <!-- BANNERS -->
+    <div class="tab-content" id="tab-banners">
+      <h2>Banners do Header</h2>
+      <form id="formBanner" class="form-admin">
+        <input type="text" id="bannerTitulo" placeholder="Título (opcional)">
+        <input type="file" id="bannerImagem" accept="image/*" required>
+        <button type="submit" class="btn-salvar">🖼️ Adicionar Banner</button>
+      </form>
+      <div id="listaBanners" class="lista-admin"></div>
+    </div>
+
+    <!-- ABA DE PEDIDOS -->
+    <div class="tab-content" id="tab-pedidos">
+      <h2>Gestão de Pedidos (Ordens de Serviço)</h2>
+      
+      <!-- Barra de Pesquisa e Filtros -->
+      <div class="search-bar" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="searchPedido" placeholder="Buscar por OS, nome ou telefone..." oninput="filtrarPedidosAdmin()" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+        <select id="filterSituacaoPedido" onchange="filtrarPedidosAdmin()" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+          <option value="">Todas as situações</option>
+          <option value="0">Pendente</option>
+          <option value="1">Em Produção</option>
+          <option value="2">Pronto</option>
+          <option value="3">Entregue</option>
+          <option value="4">Cancelado</option>
+        </select>
+      </div>
+
+      <!-- Lista de Pedidos -->
+      <div id="listaPedidosAdmin" class="lista-admin">
+        <p style="text-align: center; color: #666; padding: 20px;">Carregando pedidos...</p>
+      </div>
+    </div>
+
+    <!-- MODAL DE PRODUTOS DO PEDIDO (Coloque no final do body, antes do </body>) -->
+    <div class="modal" id="modalProdutosPedido" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);">
+      <div class="modal-content" style="max-width: 600px; margin: 5% auto; padding: 25px; border-radius: 10px; background: white; position: relative;">
+        <span class="close" onclick="fecharModalPedido()" style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer;">&times;</span>
+        <h3 id="modalTituloPedido" style="color: var(--primary); margin-bottom: 15px;"></h3>
+        <div id="modalInfoCliente" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;"></div>
+        <div id="modalListaProdutos"></div>
+        <div style="text-align: right; margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: var(--primary);">
+          Total: <span id="modalTotalPedido"></span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

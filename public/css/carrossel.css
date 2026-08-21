@@ -1,0 +1,172 @@
+
+/* =================== CARROSSEL POLAROID =================== */
+.carrossel-polaroid {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.carrossel-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.polaroid-slide {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.85) rotate(-3deg);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.polaroid-slide.active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.polaroid-slide:nth-child(1) { transform: rotate(-4deg); }
+.polaroid-slide:nth-child(2) { transform: rotate(2deg); }
+.polaroid-slide:nth-child(3) { transform: rotate(-2deg); }
+
+.polaroid-frame {
+  background: white;
+  padding: 12px 12px 45px 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25), 0 3px 10px rgba(0,0,0,0.15);
+  border-radius: 3px;
+  max-width: 280px;
+  transform-origin: center;
+  transition: transform 0.3s;
+}
+
+.polaroid-frame:hover {
+  transform: scale(1.03);
+}
+
+.polaroid-frame img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Georgia', serif;
+  font-size: 0.95rem;
+  color: #333;
+  font-style: italic;
+}
+
+.carrossel-btn {
+  background: rgba(139, 69, 19, 0.9);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  z-index: 20;
+  flex-shrink: 0;
+}
+
+.carrossel-btn:hover {
+  background: var(--primary);
+  transform: scale(1.1);
+}
+
+.carrossel-dots {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot-carrossel {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot-carrossel.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+.imagem-unica {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Upload múltiplo no admin */
+.upload-multiple {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+}
+
+.input-imagem {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: white;
+}
+
+.input-imagem:last-of-type {
+  margin-bottom: 5px;
+}
+
+
+
+/* Responsivo do carrossel */
+@media (max-width: 600px) {
+  .carrossel-container {
+    height: 320px;
+  }
+  
+  .polaroid-frame {
+    max-width: 240px;
+    padding: 10px 10px 40px 10px;
+  }
+  
+  .polaroid-frame img {
+    height: 200px;
+  }
+  
+  .carrossel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}

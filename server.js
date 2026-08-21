@@ -408,7 +408,7 @@ app.delete('/api/pedidos/:numos', verificarToken, async (req, res) => {
 });
 
 // =================== INICIALIZAÇÃO ===================
-
+/*
 app.listen(PORT, () => {
   console.log(`\n🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(` Site: http://localhost:${PORT}`);
@@ -417,3 +417,4 @@ app.listen(PORT, () => {
   console.log(`   Email: admin@artesdasoraya.com`);
   console.log(`   Senha: admin123\n`);
 });
+*/

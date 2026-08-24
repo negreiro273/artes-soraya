@@ -39,6 +39,8 @@ function mostrarTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
   if (btn) btn.classList.add('active');
+
+  aplicarMascaraTelefone(document.getElementById('bannerContato'));
 }
 
 // =================== CATEGORIAS ===================
@@ -440,7 +442,7 @@ document.getElementById('formBanner').addEventListener('submit', async (e) => {
 });
 
 async function excluirBanner(id) {
-  
+
   const confirmado = await mostrarConfirmacao(
     'Tem certeza que deseja excluir este Banner?',
     'Após a exclusão, esta ação não poderá ser desfeita.'

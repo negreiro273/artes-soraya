@@ -167,8 +167,8 @@ function fecharZoom() {
     <div class="tab-content" id="tab-banners">
       <h2>Banners do Header</h2>
       <form id="formBanner" class="form-admin">
-        <input type="text" id="bannerTitulo" placeholder="Título (opcional)">
-        <input type="text" id="bannerContato" placeholder="Telefone para Contato ( Obrigatório )">
+        <input type="text" id="bannerTitulo" placeholder="Título (opcional)">        
+        <input type="tel" id="bannerContato" required placeholder="(00) 00000-0000" maxlength="15" placeholder="Telefone para Contato ( Obrigatório )">
         <input type="file" id="bannerImagem" accept="image/*" required>
         <button type="submit" class="btn-salvar">🖼️ Adicionar Banner</button>
       </form>
@@ -213,7 +213,7 @@ function fecharZoom() {
 
 
   </div>
-
+  <script src="/js/utils.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>

@@ -16,20 +16,30 @@ let imagemProdutoAtual = null;
 
 // =================== INICIALIZAÇÃO ===================
 document.addEventListener('DOMContentLoaded', () => {
+
   carregarCategorias();
   carregarProdutos();
   carregarBanners();
   
   setupBusca();
-  setupMascaraTelefone();
+  aplicarMascaraTelefone(document.getElementById('clienteTelefone'));
+  
+ 
   setupFormIdentificacao();
 
   atualizarBadgeLista();
+
+ 
 });
 
+
 // =================== MÁSCARA DE TELEFONE ===================
-function setupMascaraTelefone() {
-  const input = document.getElementById('clienteTelefone');
+/*
+function setupMascaraTelefone(telefone) {
+  const input = telefone;
+
+  console.log(telefone);
+
   if (input) {
     input.addEventListener('input', (e) => {
       let valor = e.target.value.replace(/\D/g, '');
@@ -41,6 +51,7 @@ function setupMascaraTelefone() {
     });
   }
 }
+*/
 
 // =================== FORMULÁRIO DE IDENTIFICAÇÃO ===================
 function setupFormIdentificacao() {
@@ -81,6 +92,8 @@ function setupFormIdentificacao() {
 
 // =================== CATEGORIAS ===================
 async function carregarCategorias() {
+ 
+
   try {
     const res = await fetch('/api/categorias');
     if (!res.ok) throw new Error('Erro ao carregar categorias');
@@ -100,10 +113,14 @@ async function carregarCategorias() {
 }
 
 function filtrarCategoria(id) {
+
+  
+
   categoriaAtual = id;
   
   // Atualizar botão ativo
   document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+  
   const btnAtivo = document.querySelector(`[data-categoria="${id}"]`);
   if (btnAtivo) btnAtivo.classList.add('active');
   
@@ -244,6 +261,8 @@ async function verDetalhes(id) {
       </a>
     `;
     
+      
+
     document.getElementById('modalDetalhes').style.display = 'block';
     slideAtual = 0;
   } catch (err) {
@@ -588,6 +607,10 @@ async function finalizarPedido() {
 
 // =================== BANNERS ===================
 async function carregarBanners() {
+
+ 
+   
+
   try {
     const res = await fetch('/api/banners');
     if (!res.ok) throw new Error('Erro ao carregar banners');
@@ -597,15 +620,24 @@ async function carregarBanners() {
 
     if (dadosRecebidos.length > 0 && dadosRecebidos[0].contato) {
       // Pega o número e remove TUDO que não for dígito (espaços, traços, etc)
+      
+      
+      document.getElementById('idTelefone').innerHTML =dadosRecebidos[0].contato;
+      
       let numeroLimpo = String(dadosRecebidos[0].contato).replace(/\D/g, '');
       
       // Segurança: Se o número tiver 10 ou 11 dígitos (DDD + Número), adiciona o DDI do Brasil (55)
       if (numeroLimpo.length === 10 || numeroLimpo.length === 11) {
         numeroLimpo = '55' + numeroLimpo;
-      }
-      
+      }     
+
+
       WHATSAPP_NUMERO = numeroLimpo;
-      console.log("✅ WhatsApp atualizado do banco:", WHATSAPP_NUMERO);
+      //console.log("✅ WhatsApp atualizado do banco:", WHATSAPP_NUMERO);
+      
+
+
+
     } else {
       console.warn("⚠️ Contato não encontrado nos banners. Mantendo número padrão.");
       // Garante que a variável não fique vazia

@@ -247,6 +247,7 @@ app.get('/api/banners', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+/*
 
 app.post('/api/banners', verificarToken, upload.single('imagem'), async (req, res) => {
   try {
@@ -266,6 +267,36 @@ app.post('/api/banners', verificarToken, upload.single('imagem'), async (req, re
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+*/
+
+app.post('/api/banners', verificarToken, upload.single('imagem'), async (req, res) => {
+  try {
+    console.log('📥 Recebendo upload de banner...');
+    console.log('📁 Arquivo:', req.file);
+    console.log('📝 Body:', req.body);
+    
+    const { titulo, contato } = req.body;
+    
+    if (!req.file) {
+      console.error(' Nenhum arquivo enviado!');
+      return res.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
+    }
+    
+    const imagemUrl = req.file.path;
+    console.log('✅ Imagem enviada para:', imagemUrl);
+    
+    const result = await db.query(
+      'INSERT INTO banners (titulo, imagem, contato) VALUES ($1, $2, $3) RETURNING *',
+      [titulo, imagemUrl, contato]
+    );
+    
+    console.log('✅ Banner salvo no banco!');
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('❌ ERRO AO SALVAR BANNER:', err);
     res.status(500).json({ error: err.message });
   }
 });

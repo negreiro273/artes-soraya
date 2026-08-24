@@ -21,9 +21,13 @@
       <div class="search-area">
         <input type="text" id="searchInput" placeholder=" Buscar produtos...">
       </div>
-      <button class="btn-lista" onclick="abrirLista()">
-        <i class="fas fa-gift"></i> Montar Sua Lista de Presentes
-      </button>
+      <!-- Ícone da Lista de Presentes -->
+      <a href="#" onclick="abrirLista()" class="lista-presentes-icon" style="position: relative; display: inline-block; text-decoration: none;">
+        <i class="fas fa-gift" style="font-size: 24px; color: #fff;"></i>
+        
+        <!-- O BADGE (Contador) -->
+        <span id="badgeListaPresentes" class="badge-contador">0</span>
+      </a>
     </div>
       <div class="header-bottom-line"></div>
     <nav class="nav-menu">     

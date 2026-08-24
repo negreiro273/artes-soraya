@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBusca();
   setupMascaraTelefone();
   setupFormIdentificacao();
+
+  atualizarBadgeLista();
 });
 
 // =================== MÁSCARA DE TELEFONE ===================
@@ -101,7 +103,7 @@ function filtrarCategoria(id) {
   categoriaAtual = id;
   
   // Atualizar botão ativo
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
   const btnAtivo = document.querySelector(`[data-categoria="${id}"]`);
   if (btnAtivo) btnAtivo.classList.add('active');
   
@@ -111,6 +113,8 @@ function filtrarCategoria(id) {
 // =================== PRODUTOS ===================
 async function carregarProdutos() {
   try {
+
+    
     const busca = document.getElementById('searchInput').value;
     let url = '/api/produtos?';
     if (categoriaAtual !== 'todas') url += `categoria=${categoriaAtual}&`;
@@ -126,7 +130,9 @@ async function carregarProdutos() {
 }
 
 function renderizarProdutos() {
+
   const grid = document.getElementById('produtosGrid');
+  
   if (!grid) return;
   
   if (produtos.length === 0) {
@@ -134,6 +140,8 @@ function renderizarProdutos() {
     return;
   }
   
+  
+
   grid.innerHTML = produtos.map(p => `
     <div class="produto-card">
       <img src="${p.imagem || 'https://via.placeholder.com/300?text=Sem+Imagem'}" 
@@ -160,68 +168,7 @@ function setupBusca() {
 }
 
 // =================== DETALHES DO PRODUTO COM CARROSSEL ===================
-/*
-async function verDetalhes(id) {
-  try {
-    const res = await fetch(`/api/produtos/${id}`);
-    if (!res.ok) throw new Error('Erro ao carregar produto');
-    const p = await res.json();
-    
-    // Coletar todas as imagens disponíveis
-    const imagens = [p.imagem, p.imagem2, p.imagem3].filter(img => img && img !== '');
-    
-    let imagensHTML = '';
-    if (imagens.length > 1) {
-      imagensHTML = `
-        <div class="carrossel-polaroid">
-          <button class="carrossel-btn prev" onclick="mudarSlide(-1)">❮</button>
-          <div class="carrossel-container">
-            ${imagens.map((img, i) => `
-              <div class="polaroid-slide ${i === 0 ? 'active' : ''}">
-                <div class="polaroid-frame">
-                  <img src="${img}" alt="${p.nome} - Foto ${i + 1}" 
-                       onerror="this.src='https://via.placeholder.com/300?text=Imagem+não+encontrada'">
-                  <div class="polaroid-caption">${p.nome}</div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <button class="carrossel-btn next" onclick="mudarSlide(1)">❯</button>
-          <div class="carrossel-dots">
-            ${imagens.map((_, i) => `
-              <span class="dot-carrossel ${i === 0 ? 'active' : ''}" onclick="irParaSlide(${i})"></span>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    } else {
-      imagensHTML = `<img src="${p.imagem}" class="imagem-unica" alt="${p.nome}" 
-                          onerror="this.src='https://via.placeholder.com/300?text=Imagem+não+encontrada'">`;
-    }
-    
-    document.getElementById('modalBody').innerHTML = `
-      ${imagensHTML}
-      <h2>${p.nome}</h2>
-      <p><strong>Categoria:</strong> ${p.categoria_nome || '-'}</p>
-      <p style="margin:15px 0;">${p.descricao}</p>
-      <h3 style="color:var(--accent);">R$ ${parseFloat(p.valor).toFixed(2).replace('.', ',')}</h3>
-      <button class="btn-lista" style="margin-top:15px;width:100%;" onclick="adicionarLista(${p.id})">
-        <i class="fas fa-plus"></i> Adicionar à Lista de Presentes
-      </button>
-      <a href="https://wa.me/${WHATSAPP_NUMERO}?text=Olá! Tenho interesse no produto: ${encodeURIComponent(p.nome)}"
-         target="_blank" class="btn-whatsapp" style="display:block;text-align:center;text-decoration:none;margin-top:10px;">
-        <i class="fab fa-whatsapp"></i> Consultar pelo WhatsApp
-      </a>
-    `;
-    
-    document.getElementById('modalDetalhes').style.display = 'block';
-    slideAtual = 0;
-  } catch (err) {
-   // console.error('Erro ao carregar detalhes:', err);
-    //alert('Erro ao carregar detalhes do produto.');     
-      mostrarNotificacao('Erro', `Ocorreu um Erro ao carregar detalhes do produto. ${err}!`, 'error');
-  }
-}*/
+
 async function verDetalhes(id) {
   try {
     const res = await fetch(`/api/produtos/${id}`);
@@ -397,6 +344,7 @@ async function adicionarLista(id, nome, valor) {
       imagem: imagemProdutoAtual
     });
     localStorage.setItem('listaPresentes', JSON.stringify(listaPresentes));
+    atualizarBadgeLista();
     mostrarNotificacao('Sucesso!', `Produto adicionado à lista de ${clienteInfo.nome}!`, 'success');
   } else {
     mostrarNotificacao('Atenção', 'Produto já está na sua lista.', 'warning');
@@ -466,8 +414,7 @@ async function renderizarLista() {
       `;
     }
     
-    // Botão Finalizar Pedido
-   // Botões Finalizar e Fechar (lado a lado)
+  }
 html += `
   <div style="display: flex; gap: 10px; margin-top: 15px;">
   <button onclick="finalizarPedido()" style="
@@ -505,17 +452,11 @@ html += `
     
   </div>
 `;
-  }
+ 
   
   div.innerHTML = html;
 }
 
-// Remover item da lista
-function removerLista(id) {
-  listaPresentes = listaPresentes.filter(item => item.id !== id);
-  localStorage.setItem('listaPresentes', JSON.stringify(listaPresentes));
-  renderizarLista();
-}
 
 // Alterar dados do cliente
 function alterarCliente() {
@@ -526,10 +467,12 @@ function alterarCliente() {
   document.getElementById('clienteTelefone').value = '';
   alert('Dados removidos. Na próxima vez que adicionar um produto, será solicitado seu nome e telefone.');
 }
+
 function removerLista(id) {
-  // ✅ Filtrar pelo id do objeto, não pelo objeto inteiro
-  listaPresentes = listaPresentes.filter(item => item.id !== id);
+  
+  listaPresentes     = listaPresentes.filter(item => item.id !== id);
   localStorage.setItem('listaPresentes', JSON.stringify(listaPresentes));
+  atualizarBadgeLista();
   renderizarLista();
   mostrarNotificacao('Produto removido', 'Produto removido da sua lista de presentes.', 'info', 2500);
 }
@@ -622,7 +565,8 @@ async function finalizarPedido() {
       clienteInfo = null;
       localStorage.removeItem('clienteInfo');
 
-          
+      atualizarBadgeLista();  
+
       const inputNome = document.getElementById('clienteNome');
       const inputTelefone = document.getElementById('clienteTelefone');
       if (inputNome) inputNome.value = '';
@@ -790,9 +734,20 @@ function mostrarNotificacao(titulo, mensagem, tipo = 'info', duracao = 4000) {
   }
 }
 
-
-
-
+// =================== ATUALIZAR BADGE DA LISTA ===================
+function atualizarBadgeLista() {
+  const badge = document.getElementById('badgeListaPresentes');
+  if (badge) {
+    const quantidade = listaPresentes.length;
+    if (quantidade > 0) {
+      // Se tiver mais de 9 itens, mostra "9+" para não quebrar o layout
+      badge.textContent = quantidade > 9 ? '9+' : quantidade;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
 
 // =================== FECHAR MODAIS AO CLICAR FORA ===================
 window.onclick = (e) => {

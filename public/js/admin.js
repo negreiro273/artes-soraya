@@ -181,7 +181,14 @@ document.getElementById('formCategoria').addEventListener('submit', async (e) =>
 
 // Excluir categoria
 async function excluirCategoria(id) {
-  if (!confirm('Tem certeza que deseja excluir esta categoria?')) return;
+
+
+  const confirmado = await mostrarConfirmacao(
+    'Tem certeza que deseja excluir esta categoria?',
+    'Após a exclusão, esta ação não poderá ser desfeita.'
+  );
+
+  if (!confirmado) return;  
   
   try {
     const res = await fetch(`/api/categorias/${id}`, {
@@ -326,8 +333,15 @@ function limparFormProduto() {
 }
 
 async function excluirProduto(id) {
-  if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-  
+
+  const confirmado = await mostrarConfirmacao(
+    'Tem certeza que deseja excluir este Produto?',
+    'Após a exclusão, esta ação não poderá ser desfeita.'
+  );
+
+  if (!confirmado) return;  
+
+
   try {
     const res = await fetch(`/api/produtos/${id}`, {
       method: 'DELETE',
@@ -426,8 +440,14 @@ document.getElementById('formBanner').addEventListener('submit', async (e) => {
 });
 
 async function excluirBanner(id) {
-  if (!confirm('Tem certeza que deseja excluir este banner?')) return;
   
+  const confirmado = await mostrarConfirmacao(
+    'Tem certeza que deseja excluir este Banner?',
+    'Após a exclusão, esta ação não poderá ser desfeita.'
+  );
+
+  if (!confirmado) return;  
+
   try {
     const res = await fetch(`/api/banners/${id}`, {
       method: 'DELETE',

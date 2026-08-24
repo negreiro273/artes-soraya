@@ -1,5 +1,5 @@
 // =================== CONFIGURAÇÕES GLOBAIS ===================
-//const WHATSAPP_NUMERO = '5565984663883';
+let WHATSAPP_NUMERO = '';
 
 // =================== VARIÁVEIS GLOBAIS ===================
 let produtos = [];
@@ -379,25 +379,7 @@ function verificarCliente(produtoId) {
   }
   return true;
 }
-/* Aqui
-async function adicionarLista(id) {
-  if (!verificarCliente(id)) {
-    return;
-  }
-  
-  if (!listaPresentes.includes(id)) {
-    listaPresentes.push(id);
-    localStorage.setItem('listaPresentes', JSON.stringify(listaPresentes));
-   
-     mostrarNotificacao('Lista de Presentes', `Produto adicionado à lista de ${clienteInfo.nome}!`, 'success');
-  } else {
-   
-     mostrarNotificacao('Lista de Presentes', 'Produto já está na sua lista.', 'success');
-  }
 
-
-}
-*/
 
 async function adicionarLista(id, nome, valor) {
   if (!verificarCliente(id)) {
@@ -442,89 +424,7 @@ function abrirLista() {
 function fecharLista() {
   document.getElementById('modalLista').style.display = 'none';
 }
-/* aqui
-async function renderizarLista() {
-  const div = document.getElementById('listaItens');
-  if (!div) return;
-  
-  let html = '';
-  
-  // Mostrar informações do cliente no topo
-  if (clienteInfo) {
-    html += `
-      <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary);">         
-         <p><strong>👤 Cliente:</strong> ${clienteInfo.nome}</p>
-        <p><strong>📱 Telefone:</strong> ${clienteInfo.telefone}</p>
-        <button onclick="alterarCliente()" style="margin-top: 10px; background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
-          <i class="fas fa-edit"></i> Alterar dados
-        </button>
-      </div>
-    `;
-  }
-  
-  if (listaPresentes.length === 0) {
-    html += '<p style="text-align:center;color:#666;padding:20px;">Sua lista está vazia.</p>';
-  } else {
-    for (const id of listaPresentes) {
-      try {
-        const res = await fetch(`/api/produtos/${id}`);
-        
-        const p = await res.json();
-        html += `
-          <div class="lista-item" >
-            <span>${p.nome} - R$ ${parseFloat(p.valor).toFixed(2).replace('.', ',')}</span>
-            <button onclick="removerLista(${id})" style="background:red;color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;">✕</button>
-          </div>
-        `;
-      } catch (err) {
-        console.error('Erro ao carregar produto da lista:', err);
-      }
-    }
-  }
-  
-  div.innerHTML = html;
-}*/
-/*
-async function renderizarLista() {
-  const div = document.getElementById('listaItens');
-  if (!div) return;
-  
-  let html = '';
-  
-  // Mostrar informações do cliente no topo (APENAS UMA VEZ)
-  if (clienteInfo) {
-    html += `
-      <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary);">
-        <p><strong>👤 Cliente:</strong> ${clienteInfo.nome}</p>
-        <p><strong>📱 Telefone:</strong> ${clienteInfo.telefone}</p>
-  
-      </div>
-    `;
-  }
-  
-  if (listaPresentes.length === 0) {
-    html += '<p style="text-align:center;color:#666;padding:20px;">Sua lista está vazia.</p>';
-  } else {
-    for (const item of listaPresentes) {
-      html += `
-        <div class="lista-item" style="display:flex;align-items:center;gap:15px;padding:10px;">
-          <img src="${item.imagem}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" 
-               onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
-          <div style="flex:1;">
-            <strong>${item.nome}</strong>
-            <div style="color:var(--primary);font-weight:bold;">R$ ${item.valor.toFixed(2).replace('.', ',')}</div>
-          </div>
-          <button onclick="removerLista(${item.id})" style="background:red;color:white;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;">✕</button>
-        </div>
-      `;
-    }
-    
-   
-  }
-  
-  // Definir o HTML APENAS UMA VEZ
-  div.innerHTML = html;
-}*/
+
 
 
 // Renderizar lista de presentes
@@ -651,116 +551,6 @@ function alterarCliente() {
 }
 
 // =================== FINALIZAR PEDIDO ===================
-/* aqui
-async function finalizarPedido() {
-  // 1. Validações
-  if (listaPresentes.length === 0) {
-    mostrarNotificacao('Lista vazia', 'Adicione produtos antes de finalizar.', 'warning');
-    return;
-  }
-  
-  if (!clienteInfo) {
-    mostrarNotificacao('Identificação necessária', 'Por favor, identifique-se antes de finalizar.', 'warning');
-    return;
-  }
-  
-  try {
-    // 2. Buscar detalhes de todos os produtos
-    let detalhesProdutos = [];
-    
-    for (const id of listaPresentes) {
-      const res = await fetch(`/api/produtos/${id}`);
-      const p = await res.json();
-      detalhesProdutos.push({
-        id: p.id,
-        nome: p.nome,
-        valor: parseFloat(p.valor)
-      });
-    }
-    
-    // 3. ENVIAR PARA O BACKEND SALVAR NO BANCO
-    const resPedido = await fetch('/api/pedidos/finalizar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nomecliente: clienteInfo.nome,
-        contatocliente: clienteInfo.telefone,
-        produtos: detalhesProdutos
-      })
-    });
-    
-    const dadosPedido = await resPedido.json();
-    
-    if (!resPedido.ok) {
-      throw new Error(dadosPedido.error || 'Erro ao finalizar pedido');
-    }
-    
-    // 4. Pegar os números das OS gerados
-    const numerosOS = dadosPedido.pedidos.map(p => p.numos).join(', ');
-    
-    // 5. Calcular total
-    const total = detalhesProdutos.reduce((sum, p) => sum + p.valor, 0);
-    
-    // 6. Montar mensagem do WhatsApp COM os números das OS
-    let msg = `🎁 *PEDIDO FINALIZADO - Artes da Soraya*%0A%0A`;
-    msg += `📋 *OS Nº(s):* ${numerosOS}%0A%0A`;
-    msg += ` *Cliente:* ${encodeURIComponent(clienteInfo.nome)}%0A`;
-    msg += `📱 *Telefone:* ${encodeURIComponent(clienteInfo.telefone)}%0A%0A`;
-    msg += `*Produtos:*%0A`;
-    
-    for (const produto of detalhesProdutos) {
-      msg += `• ${encodeURIComponent(produto.nome)} - R$ ${produto.valor.toFixed(2).replace('.', ',')}%0A`;
-    }
-    
-    msg += `%0A💰 *Total: R$ ${total.toFixed(2).replace('.', ',')}*%0A%0A`;
-    msg += `✅ *Pedido registrado no sistema!*`;
-    
-    // 7. Abrir WhatsApp
-    window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${msg}`, '_blank');
-    
-    // 8. Mostrar notificação de sucesso
-    mostrarNotificacao(
-      'Pedido Finalizado!', 
-      `OS Nº ${numerosOS} gerada(s) com sucesso! Redirecionando...`, 
-      'success', 
-      5000
-    );
-    
-    // 9. Confirmar limpeza
-    const confirmar = confirm(
-      `✅ Pedido registrado com sucesso!\n\n` +
-      `Nº da(s) OS: ${numerosOS}\n\n` +
-      'Deseja limpar a lista e os dados do cliente?'
-    );
-    
-    if (confirmar) {
-      // Limpar lista
-      listaPresentes = [];
-      localStorage.removeItem('listaPresentes');
-      
-      // Limpar dados do cliente
-      clienteInfo = null;
-      localStorage.removeItem('clienteInfo');
-      
-      // Limpar campos
-      const inputNome = document.getElementById('clienteNome');
-      const inputTelefone = document.getElementById('clienteTelefone');
-      if (inputNome) inputNome.value = '';
-      if (inputTelefone) inputTelefone.value = '';
-      
-      // Fechar modal
-      fecharLista();
-      
-      alert(' Obrigado pela preferência!\n\nSeu pedido foi registrado!');
-    }
-    
-  } catch (err) {
-    console.error('Erro:', err);
-    mostrarNotificacao('Erro', 'Não foi possível finalizar o pedido. Tente novamente.', 'error');
-  }
-
-}
-*/
 
 async function finalizarPedido() {
   if (listaPresentes.length === 0) {
@@ -851,22 +641,60 @@ async function finalizarPedido() {
   }
 }
 
+
 // =================== BANNERS ===================
 async function carregarBanners() {
   try {
     const res = await fetch('/api/banners');
     if (!res.ok) throw new Error('Erro ao carregar banners');
-    banners = await res.json();
     
+    const dadosRecebidos = await res.json();
+    
+
+    if (dadosRecebidos.length > 0 && dadosRecebidos[0].contato) {
+      // Pega o número e remove TUDO que não for dígito (espaços, traços, etc)
+      let numeroLimpo = String(dadosRecebidos[0].contato).replace(/\D/g, '');
+      
+      // Segurança: Se o número tiver 10 ou 11 dígitos (DDD + Número), adiciona o DDI do Brasil (55)
+      if (numeroLimpo.length === 10 || numeroLimpo.length === 11) {
+        numeroLimpo = '55' + numeroLimpo;
+      }
+      
+      WHATSAPP_NUMERO = numeroLimpo;
+      console.log("✅ WhatsApp atualizado do banco:", WHATSAPP_NUMERO);
+    } else {
+      console.warn("⚠️ Contato não encontrado nos banners. Mantendo número padrão.");
+      // Garante que a variável não fique vazia
+      WHATSAPP_NUMERO = WHATSAPP_NUMERO || "5511999999999"; 
+    }
+
+    // Atualiza o botão flutuante se ele existir nesta página
+    const btnWhatsApp = document.getElementById('btnWhatsApp');
+    if (btnWhatsApp && WHATSAPP_NUMERO) {
+      const mensagem = encodeURIComponent("Olá! Gostaria de mais informações sobre os produtos.");
+      
+      
+      btnWhatsApp.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagem}`;
+      console.log("✅ Link do WhatsApp gerado:", btnWhatsApp.href);
+    }
+
+
     const slider = document.getElementById('bannerSlider');
-    const dots   = document.getElementById('bannerDots');
+    const dots = document.getElementById('bannerDots');
     
-    if (!slider || !dots) return;
+
+    if (!slider || !dots) {
+      console.log("ℹ️ Slider não encontrado nesta página. Renderização do banner pulada.");
+      return; 
+    }
     
-    if (banners.length === 0) {
+    if (dadosRecebidos.length === 0) {
       slider.innerHTML = '<img src="https://via.placeholder.com/1200x400?text=Artes+da+Soraya" alt="Banner">';
       return;
     }
+
+   
+    banners = dadosRecebidos;
     
     slider.innerHTML = banners.map(b => 
       `<img src="${b.imagem}" alt="${b.titulo || 'Banner'}" 
@@ -876,15 +704,18 @@ async function carregarBanners() {
     dots.innerHTML = banners.map((_, i) =>
       `<span class="dot ${i === 0 ? 'active' : ''}" onclick="irBanner(${i})"></span>`
     ).join('');
-    
-    // Iniciar rotação automática apenas se houver mais de 1 banner
+  
     if (banners.length > 1) {
-      setInterval(proximoBanner, 5000);
+     
+      if (window.intervaloBanner) clearInterval(window.intervaloBanner);
+      window.intervaloBanner = setInterval(proximoBanner, 5000);
     }
+    
   } catch (err) {
     console.error('Erro ao carregar banners:', err);
   }
 }
+
 
 function proximoBanner() {
   bannerAtual = (bannerAtual + 1) % banners.length;

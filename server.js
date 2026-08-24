@@ -1,25 +1,49 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const db = require('./config/database');
 const { verificarToken, gerarToken } = require('./middleware/auth');
-const { error } = require('console');
 
-require('dotenv').config();
+// =================== CONFIGURAÇÃO DO CLOUDINARY ===================
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configuração do armazenamento no Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'artes-da-soraya', // Nome da pasta no seu Cloudinary
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'svg'],
+  },
+});
+
+const upload = multer({ storage: storage });
+const uploadMultiple = multer({ 
+  storage: storage,
+  limits: { files: 3 }
+});
+
+// =================== INICIALIZAÇÃO DO APP ===================
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// =================== MIDDLEWARES ===================
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Servir arquivos estáticos do frontend (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware de log
 app.use((req, res, next) => {
@@ -27,33 +51,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Garantir pastas
-['uploads'].forEach(dir => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-});
-
-// =================== CONFIGURAÇÃO DO UPLOAD ===================
-// Upload de imagens - PRIMEIRO declaramos o storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, Date.now() + ext);
-  }
-});
-
-// Upload simples (para banners)
-const upload = multer({ storage });
-
-// Upload múltiplo de imagens (até 3) - DEPOIS usamos o storage já declarado
-const uploadMultiple = multer({ 
-  storage: storage,
-  limits: { files: 3 }
-});
-
 // =================== AUTENTICAÇÃO ===================
-
-// Login
 app.post('/api/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -83,19 +81,16 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Logout
 app.post('/api/logout', (req, res) => {
   res.clearCookie('token');
   res.json({ success: true });
 });
 
-// Verificar sessão
 app.get('/api/me', verificarToken, (req, res) => {
   res.json({ usuario: req.usuario });
 });
 
 // =================== CATEGORIAS ===================
-
 app.get('/api/categorias', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM categorias ORDER BY descricao');
@@ -117,7 +112,7 @@ app.post('/api/categorias', verificarToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// PUT categoria com ícone
+
 app.put('/api/categorias/:id', verificarToken, async (req, res) => {
   try {
     const { descricao, icone } = req.body;
@@ -141,7 +136,6 @@ app.delete('/api/categorias/:id', verificarToken, async (req, res) => {
 });
 
 // =================== PRODUTOS ===================
-
 app.get('/api/produtos', async (req, res) => {
   try {
     const { categoria, busca } = req.query;
@@ -190,9 +184,10 @@ app.post('/api/produtos', verificarToken, uploadMultiple.array('imagens', 3), as
     const { nome, descricao, valor, categoriaId } = req.body;
     const imagens = req.files || [];
     
-    const imagem1 = imagens[0] ? '/uploads/' + imagens[0].filename : '';
-    const imagem2 = imagens[1] ? '/uploads/' + imagens[1].filename : '';
-    const imagem3 = imagens[2] ? '/uploads/' + imagens[2].filename : '';
+    // O Cloudinary retorna a URL completa em req.file.path
+    const imagem1 = imagens[0] ? imagens[0].path : '';
+    const imagem2 = imagens[1] ? imagens[1].path : '';
+    const imagem3 = imagens[2] ? imagens[2].path : '';
     
     const result = await db.query(
       `INSERT INTO produtos (nome, descricao, valor, categoria_id, imagem, imagem2, imagem3) 
@@ -201,6 +196,7 @@ app.post('/api/produtos', verificarToken, uploadMultiple.array('imagens', 3), as
     );
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -210,13 +206,13 @@ app.put('/api/produtos/:id', verificarToken, uploadMultiple.array('imagens', 3),
     const { nome, descricao, valor, categoriaId } = req.body;
     const imagens = req.files || [];
     
-    // Buscar produto atual para manter imagens existentes se não enviar novas
     const atual = await db.query('SELECT * FROM produtos WHERE id = $1', [req.params.id]);
     const produtoAtual = atual.rows[0];
     
-    const imagem1 = imagens[0] ? '/uploads/' + imagens[0].filename : produtoAtual.imagem;
-    const imagem2 = imagens[1] ? '/uploads/' + imagens[1].filename : produtoAtual.imagem2;
-    const imagem3 = imagens[2] ? '/uploads/' + imagens[2].filename : produtoAtual.imagem3;
+    // Se enviar nova imagem, usa a URL do Cloudinary, senão mantém a antiga
+    const imagem1 = imagens[0] ? imagens[0].path : produtoAtual.imagem;
+    const imagem2 = imagens[1] ? imagens[1].path : produtoAtual.imagem2;
+    const imagem3 = imagens[2] ? imagens[2].path : produtoAtual.imagem3;
     
     await db.query(
       `UPDATE produtos SET nome=$1, descricao=$2, valor=$3, categoria_id=$4, 
@@ -227,6 +223,7 @@ app.put('/api/produtos/:id', verificarToken, uploadMultiple.array('imagens', 3),
     const result = await db.query('SELECT * FROM produtos WHERE id = $1', [req.params.id]);
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -241,10 +238,10 @@ app.delete('/api/produtos/:id', verificarToken, async (req, res) => {
 });
 
 // =================== BANNERS ===================
-
 app.get('/api/banners', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM banners ORDER BY ordem');
+    // Garantimos que 'contato' e 'imagem' (URL do Cloudinary) sejam buscados
+    const result = await db.query('SELECT id, titulo, imagem, contato, ordem FROM banners ORDER BY ordem');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -254,19 +251,29 @@ app.get('/api/banners', async (req, res) => {
 app.post('/api/banners', verificarToken, upload.single('imagem'), async (req, res) => {
   try {
     const { titulo, contato } = req.body;
-    const imagem = '/uploads/' + req.file.filename;
+    
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
+    }
+    
+    // req.file.path contém a URL HTTPS direta do Cloudinary
+    const imagemUrl = req.file.path; 
+    
     const result = await db.query(
       'INSERT INTO banners (titulo, imagem, contato) VALUES ($1, $2, $3) RETURNING *',
-      [titulo, imagem, contato]
+      [titulo, imagemUrl, contato]
     );
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.delete('/api/banners/:id', verificarToken, async (req, res) => {
   try {
+    // Opcional: Aqui você poderia adicionar uma chamada ao cloudinary.uploader.destroy() 
+    // para deletar a imagem da nuvem também, mas por enquanto vamos só remover do banco.
     await db.query('DELETE FROM banners WHERE id = $1', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
@@ -274,13 +281,11 @@ app.delete('/api/banners/:id', verificarToken, async (req, res) => {
   }
 });
 
-
-//=====================PEDIDOS===========================
+// =================== PEDIDOS ===================
 app.post('/api/pedidos/finalizar', async (req, res) => {
   try {
     const { nomecliente, contatocliente, produtos } = req.body;
     
-    // Gerar numos único para todo o pedido
     const seqResult = await db.query("SELECT nextval('os_seq') as numos");
     const numosGeral = seqResult.rows[0].numos;
     
@@ -309,88 +314,43 @@ app.post('/api/pedidos/finalizar', async (req, res) => {
   }
 });
 
-// Rota para consultar todos os pedidos (para o admin)
-// =================== PEDIDOS ===================
-
-// Listar todos os pedidos (ADMIN)
 app.get('/api/pedidos', verificarToken, async (req, res) => {
   try {
     const result = await db.query(`
       SELECT 
-        p.id,
-        p.numos,
-        p.nomecliente,
-        p.contatocliente,
-        p.produto_id,
-        p.imagem_produto,
-        pr.nome as nome_produto,
-        pr.valor,
-        pr.imagem as imagem_original,
-        p.datapedido,
-        p.datafimpedido,
-        p.situacaopedido
+        p.id, p.numos, p.nomecliente, p.contatocliente, p.produto_id,
+        p.imagem_produto, pr.nome as nome_produto, pr.valor,
+        pr.imagem as imagem_original, p.datapedido, p.datafimpedido, p.situacaopedido
       FROM pedidos p
       LEFT JOIN produtos pr ON p.produto_id = pr.id
       ORDER BY p.datapedido DESC
     `);
-    
-    // IMPORTANTE: Retornar o array diretamente, não { pedidos: result.rows }
     res.json(result.rows);
-    
   } catch (err) {
     console.error('Erro ao carregar pedidos:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Rota para atualizar situação do pedido
 app.put('/api/pedidos/:numos/situacao', verificarToken, async (req, res) => {
   try {
     const { situacaopedido } = req.body;
-    
-    let datafim = null;
-    if (situacaopedido == 3) {
-      datafim = new Date();
-    }
+    let datafim = situacaopedido == 3 ? new Date() : null;
     
     const result = await db.query(
-      `UPDATE pedidos 
-       SET situacaopedido = $1, 
-           datafimpedido = $2 
-       WHERE numos = $3 
-       RETURNING *`,
+      `UPDATE pedidos SET situacaopedido = $1, datafimpedido = $2 WHERE numos = $3 RETURNING *`,
       [situacaopedido, datafim, req.params.numos]
     );
-    
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-
-// Rota para testar se imagem existe
-app.get('/api/test-imagem/:nome', (req, res) => {
-  const caminhoImagem = path.join(__dirname, 'uploads', req.params.nome);
-  console.log('Tentando acessar:', caminhoImagem);
-  
-  if (fs.existsSync(caminhoImagem)) {
-    res.json({ existe: true, caminho: `/uploads/${req.params.nome}` });
-  } else {
-    res.json({ existe: false, caminho: caminhoImagem });
-  }
-});
-
-// =================== EXCLUIR PEDIDO ===================
 app.delete('/api/pedidos/:numos', verificarToken, async (req, res) => {
   try {
     const { numos } = req.params;
-    
-    // Excluir todos os registros com esse número de OS
-    const result = await db.query(
-      'DELETE FROM pedidos WHERE numos = $1',
-      [numos]
-    );
+    const result = await db.query('DELETE FROM pedidos WHERE numos = $1', [numos]);
     
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Pedido não encontrado' });
@@ -408,12 +368,11 @@ app.delete('/api/pedidos/:numos', verificarToken, async (req, res) => {
 });
 
 // =================== INICIALIZAÇÃO ===================
-
 app.listen(PORT, () => {
   console.log(`\n🚀 Servidor rodando em http://localhost:${PORT}`);
-  console.log(` Site: http://localhost:${PORT}`);
+  console.log(`🌐 Site: http://localhost:${PORT}`);
   console.log(`🔧 Admin: http://localhost:${PORT}/login.html`);
   console.log(`\n📋 Credenciais padrão:`);
-  console.log(`   Email: admin@artesdasoraya.com`);
-  console.log(`   Senha: admin123\n`);
+  //console.log(`   Email: admin@artesdasoraya.com`);
+  //console.log(`   Senha: admin123\n`);
 });

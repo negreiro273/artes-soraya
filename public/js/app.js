@@ -1,5 +1,5 @@
 // =================== CONFIGURAÇÕES GLOBAIS ===================
-const WHATSAPP_NUMERO = '5565984663883';
+//const WHATSAPP_NUMERO = '5565984663883';
 
 // =================== VARIÁVEIS GLOBAIS ===================
 let produtos = [];
@@ -851,31 +851,6 @@ async function finalizarPedido() {
   }
 }
 
-// =================== EXCLUIR PEDIDO ===================
-app.delete('/api/pedidos/:numos', verificarToken, async (req, res) => {
-  try {
-    const { numos } = req.params;
-    
-    // Excluir todos os registros com esse numos
-    const result = await db.query(
-      'DELETE FROM pedidos WHERE numos = $1',
-      [numos]
-    );
-    
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Pedido não encontrado' });
-    }
-    
-    res.json({ 
-      success: true, 
-      message: `Pedido OS #${numos} excluído com sucesso`,
-      rowsDeleted: result.rowCount 
-    });
-  } catch (err) {
-    console.error('Erro ao excluir pedido:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 // =================== BANNERS ===================
 async function carregarBanners() {
   try {
@@ -884,7 +859,7 @@ async function carregarBanners() {
     banners = await res.json();
     
     const slider = document.getElementById('bannerSlider');
-    const dots = document.getElementById('bannerDots');
+    const dots   = document.getElementById('bannerDots');
     
     if (!slider || !dots) return;
     

@@ -253,11 +253,11 @@ app.get('/api/banners', async (req, res) => {
 
 app.post('/api/banners', verificarToken, upload.single('imagem'), async (req, res) => {
   try {
-    const { titulo } = req.body;
+    const { titulo, contato } = req.body;
     const imagem = '/uploads/' + req.file.filename;
     const result = await db.query(
-      'INSERT INTO banners (titulo, imagem) VALUES ($1, $2) RETURNING *',
-      [titulo, imagem]
+      'INSERT INTO banners (titulo, imagem, contato) VALUES ($1, $2, $3) RETURNING *',
+      [titulo, imagem, contato]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -408,7 +408,7 @@ app.delete('/api/pedidos/:numos', verificarToken, async (req, res) => {
 });
 
 // =================== INICIALIZAÇÃO ===================
-/*
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(` Site: http://localhost:${PORT}`);
@@ -417,4 +417,3 @@ app.listen(PORT, () => {
   console.log(`   Email: admin@artesdasoraya.com`);
   console.log(`   Senha: admin123\n`);
 });
-*/

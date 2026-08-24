@@ -348,7 +348,9 @@ document.getElementById('formBanner').addEventListener('submit', async (e) => {
   
   const formData = new FormData();
   formData.append('titulo', document.getElementById('bannerTitulo').value);
+  formData.append('contato', document.getElementById('bannerContato').value);
   const imagem = document.getElementById('bannerImagem').files[0];
+  
   if (imagem) {
     formData.append('imagem', imagem);
   }

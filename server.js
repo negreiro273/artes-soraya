@@ -14,6 +14,7 @@ const db = require('./config/database');
 const { verificarToken, gerarToken } = require('./middleware/auth');
 
 // =================== CONFIGURAÇÃO DO CLOUDINARY ===================
+
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 

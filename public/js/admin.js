@@ -51,7 +51,12 @@ async function carregarCategorias() {
     atualizarSelectCategorias();
   } catch (err) {
     console.error('Erro:', err);
-    alert('Erro ao carregar categorias. Verifique se o servidor está rodando.');
+    
+     mostrarNotificacao(
+        'Erro', 
+          err || 'ao carregar categorias.', 
+        'error'
+      );
   }
 }
 
@@ -157,10 +162,20 @@ document.getElementById('formCategoria').addEventListener('submit', async (e) =>
     
     limparFormCategoria();
     await carregarCategorias();
-    alert('Categoria salva com sucesso!');
+    
+    mostrarNotificacao(
+        'Categoria', 
+        `Salva com Sucesso!`, 
+        'success'
+      );
   } catch (err) {
     console.error(err);
-    alert('Erro ao salvar categoria. Verifique o console.');
+    
+       mostrarNotificacao(
+        'Erro', 
+          err || 'Erro ao salvar categoria.', 
+        'error'
+      );
   }
 });
 
@@ -177,10 +192,19 @@ async function excluirCategoria(id) {
     if (!res.ok) throw new Error('Erro ao excluir categoria');
     
     await carregarCategorias();
-    alert('Categoria excluída com sucesso!');
+    
+       mostrarNotificacao(
+        'Categoria', 
+        `excluída com Sucesso!`, 
+        'success'
+      );
   } catch (err) {
     console.error(err);
-    alert('Erro ao excluir categoria.');
+      mostrarNotificacao(
+        'Erro', 
+          err || 'Erro ao excluir categoria.', 
+        'error'
+      );
   }
 }
 
@@ -260,10 +284,20 @@ document.getElementById('formProduto').addEventListener('submit', async (e) => {
     
     limparFormProduto();
     await carregarProdutos();
-    alert('Produto salvo com sucesso!');
+    //alert('Produto salvo com sucesso!');
+   mostrarNotificacao(
+        'Produto', 
+        `Salvo com Sucesso!`, 
+        'success'
+      );
   } catch (err) {
     console.error(err);
-    alert('Erro ao salvar produto. Verifique o console.');
+    //alert('Erro ao salvar produto. Verifique o console.');
+      mostrarNotificacao(
+        'Erro', 
+          err || 'Erro ao salvar produto', 
+        'error'
+      );
   }
 });
 
@@ -303,10 +337,20 @@ async function excluirProduto(id) {
     if (!res.ok) throw new Error('Erro ao excluir produto');
     
     await carregarProdutos();
-    alert('Produto excluído com sucesso!');
+
+       mostrarNotificacao(
+        'Produto', 
+        `excluído com Sucesso!`, 
+        'success'
+      );
   } catch (err) {
     console.error(err);
-    alert('Erro ao excluir produto.');
+
+   mostrarNotificacao(
+        'Erro', 
+          err || 'Erro ao Excluir Produto.', 
+        'error'
+      );
   }
 }
 
@@ -366,10 +410,18 @@ document.getElementById('formBanner').addEventListener('submit', async (e) => {
     
     document.getElementById('formBanner').reset();
     await carregarBanners();
-    alert('Banner salvo com sucesso!');
+       mostrarNotificacao(
+        'Banner', 
+        `Salvo com Sucesso!`, 
+        'success'
+      );
   } catch (err) {
     console.error(err);
-    alert('Erro ao salvar banner. Verifique o console.');
+    mostrarNotificacao(
+        'Banner', 
+          err || 'Erro ao salvar banner', 
+        'error'
+      );
   }
 });
 
@@ -385,10 +437,21 @@ async function excluirBanner(id) {
     if (!res.ok) throw new Error('Erro ao excluir banner');
     
     await carregarBanners();
-    alert('Banner excluído com sucesso!');
+
+       mostrarNotificacao(
+        'Banner', 
+        `Excluído com Sucesso!`, 
+        'success'
+      );
+
   } catch (err) {
-    console.error(err);
-    alert('Erro ao excluir banner.');
+    console.error(err);    
+    
+   mostrarNotificacao(
+        'Banner', 
+          err || 'Erro ao excluir Banner.', 
+        'error'
+      );
   }
 }
 
@@ -404,7 +467,7 @@ async function carregarPedidosAdmin() {
     
     // Lê a resposta como JSON
     const data = await res.json();
-    console.log('Resposta da API /api/pedidos:', data); // <-- Isso vai nos mostrar o que o servidor está enviando
+    //console.log('Resposta da API /api/pedidos:', data); // <-- Isso vai nos mostrar o que o servidor está enviando
     
     // Se a resposta não for OK (ex: 401, 500), lança o erro
     if (!res.ok) {

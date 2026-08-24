@@ -12,12 +12,31 @@ const { verificarToken, gerarToken } = require('./middleware/auth');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+
+console.log('🔧 Configurando Cloudinary...');
+console.log('Cloud Name:', process.env.CLOUDINARY_CLOUD_NAME);
+console.log('API Key:', process.env.CLOUDINARY_API_KEY ? '***' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'NÃO CONFIGURADA');
+
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+
+// Testar se a configuração funcionou
+try {
+  cloudinary.api.ping((error, result) => {
+    if (error) {
+      console.error('❌ ERRO AO CONECTAR COM CLOUDINARY:', error.message);
+    } else {
+      console.log('✅ Cloudinary conectado com sucesso!');
+    }
+  });
+} catch (err) {
+  console.error('❌ Erro ao testar Cloudinary:', err);
+}
 // Configuração do armazenamento no Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,

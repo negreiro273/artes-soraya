@@ -1,5 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+
+console.log(' INICIANDO SERVER.JS - Versão com Cloudinary');
+console.log(' Data:', new Date().toISOString());
+
+
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');

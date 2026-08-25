@@ -27,10 +27,24 @@ function getHeaders() {
 
 // =================== INICIALIZAÇÃO ===================
 document.addEventListener('DOMContentLoaded', () => {
-  carregarCategorias();
-  carregarProdutos();
-  carregarBanners();
-  carregarPedidosAdmin(); 
+
+  verificarSessaoAoCarregar().then(sessaoValida => {
+      if (!sessaoValida) {  return;  }
+
+
+      carregarCategorias();
+      carregarProdutos();
+      carregarBanners();
+      carregarPedidosAdmin(); 
+
+   }).catch(err => {
+    // Caso ocorra algum erro inesperado na verificação
+    console.error('Erro ao verificar sessão:', err);
+    redirecionarParaLogin();
+  });   
+
+
+
 });
 
 // =================== TABS ===================
@@ -43,8 +57,31 @@ function mostrarTab(tab, btn) {
   aplicarMascaraTelefone(document.getElementById('bannerContato'));
 }
 
+// =================== FUNÇÃO DE LOGOUT MANUAL ===================
+// Adicione um botão "Sair" no seu HTML que chame esta função
+async function fazerLogout() {
+  const token = localStorage.getItem('token');
+  
+  try {
+    // Avisa o backend para limpar o cookie (boa prática)
+    await fetch('/api/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao avisar backend do logout:', err);
+  } finally {
+    // Independente de erro, limpa o frontend e manda pro login
+    redirecionarParaLogin();
+  }
+}
+
+
 // =================== CATEGORIAS ===================
 async function carregarCategorias() {
+
   try {
     const res = await fetch('/api/categorias');
     if (!res.ok) throw new Error('Erro ao carregar categorias');

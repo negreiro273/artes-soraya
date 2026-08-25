@@ -17,6 +17,9 @@ let imagemProdutoAtual = null;
 // =================== INICIALIZAÇÃO ===================
 document.addEventListener('DOMContentLoaded', () => {
 
+
+  limparSessaoCompleta();
+
   carregarCategorias();
   carregarProdutos();
   carregarBanners();
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFormIdentificacao();
 
   atualizarBadgeLista();
+
 
  
 });
